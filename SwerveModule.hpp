@@ -1,8 +1,8 @@
-#include <TalonFXMotor.hpp>
+#include <SparkMotor.hpp>
 
 class SwerveModule {
-    TalonFXMotor* speed;
-    TalonFXMotor* direction;
+    SparkMotor* speed;
+    SparkMotor* direction;
     short role;           // This is determined by what side the module is on, and it does different stuff based off that.
     bool linked = false;   // Allows to link with other modules (to save time)
     
@@ -12,8 +12,8 @@ class SwerveModule {
     
     
     SwerveModule(int speedID, int direcID, short roll, bool speedInverted=false, bool direcInverted=false) {
-        speed = new TalonFXMotor {speedID};
-        direction = new TalonFXMotor {direcID};
+        speed = new SparkMotor {speedID};
+        direction = new SparkMotor {direcID};
         role = roll;
         
         if (speedInverted) {

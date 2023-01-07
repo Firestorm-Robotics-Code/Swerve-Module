@@ -1,4 +1,8 @@
-#include <FRL/SparkMotor.hpp>
+#pragma once
+
+#include <SparkMotor.hpp>
+#include <ctre/Phoenix.h>
+
 #define BANGBANG_ERROR_SPEED 68
 
 
@@ -13,9 +17,9 @@ class SwerveModule {
     bool zeroed = false;
     float bangErrorSpeed = .1;
     
-    SwerveModule link1;
-    SwerveModule link2;
-    SwerveModule link3;
+    SwerveModule* link1;
+    SwerveModule* link2;
+    SwerveModule* link3;
     
     
     SwerveModule(int speedID, int direcID, int CanCoderID, short roll, bool speedInverted=false, bool direcInverted=false) {
@@ -25,10 +29,10 @@ class SwerveModule {
         role = roll;
         
         if (speedInverted) {
-            speed -> setInverted()
+            speed -> setInverted();
         }
         if (direcInverted) {
-            direc -> setInverted()
+            direction -> setInverted();
         }
         
         config.sensorCoefficient = 2 * M_PI / 4096.0;      // Convert to radians
@@ -39,17 +43,23 @@ class SwerveModule {
     void calibrate() {            // Intented to be ran once, or after the build team destroys the robot. Calibrates the CanCoder 
         cancoder -> ConfigAllSettings(config);
         cancoder -> SetPosition(0);
+
+        if (main) {
+            link1 -> calibrate();
+            link2 -> calibrate();
+            link3 -> calibrate();
+        }
     }       
     
     void link(SwerveModule* Link1, SwerveModule* Link2, SwerveModule* Link3) {
         main = true;           // Only one module will have main as true; this will be the 'main' module; the one you control with.
-        link1 = &Link1;
-        link2 = &Link2;
-        link3 = &Link3;
-        
-        
+        link1 = Link1;
+        link2 = Link2;
+        link3 = Link3;   
+    }
+
     void zero() {
-        if (cancoder -> HasResetOccured()) {
+        if (cancoder -> HasResetOccurred()) {
             zeroed = false;
         }
         
@@ -67,18 +77,19 @@ class SwerveModule {
         }
         
         if (main) {
-            link1.zero();
-            link2.zero();
-            link3.zero();
+            link1 -> zero();
+            link2 -> zero();
+            link3 -> zero();
         }
     }
     
     void SetDirectionAngle(double angle) {
         double currentPos = cancoder -> GetPosition();
-        if ( downMarg < angle) {
+
+        if ( currentPos < angle ) {
             direction -> SetPercent(BANGBANG_ERROR_SPEED);
         }
-        else if (upMarg > angle)) {
+        else if ( currentPos > angle ) {
             direction -> SetPercent(-BANGBANG_ERROR_SPEED);
         }
         else {
@@ -86,10 +97,9 @@ class SwerveModule {
         }
         
         if (main) {
-            link1.SetDirectionAngle(angle);
-            link2.SetDirectionAngle(angle);
-            link3.SetDirectionAngle(angle);
+            link1 -> SetDirectionAngle(angle);
+            link2 -> SetDirectionAngle(angle);
+            link3 -> SetDirectionAngle(angle);
         }
     }                                            
 };
-

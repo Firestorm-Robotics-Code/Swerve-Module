@@ -1,7 +1,5 @@
 #include <FRL/SparkMotor.hpp>
-
 #define BANGBANG_ERROR_SPEED 68
-#define CANCODER_MARG 15
 
 
 class SwerveModule {
@@ -12,6 +10,8 @@ class SwerveModule {
     
     short role;           // This is determined by what side the module is on, and it does different stuff based off that.
     bool main = false;   // There is a 'main' module that is linked to other modules
+    bool zeroed = false;
+    float bangErrorSpeed = .1;
     
     SwerveModule link1;
     SwerveModule link2;
@@ -49,13 +49,21 @@ class SwerveModule {
         
         
     void zero() {
-        if (cancoder -> )
-        
-        if (cancoder -> GetPosition() > 0) {
-            direction -> SetPercent(BANGBANG_ERROR_SPEED);
+        if (cancoder -> HasResetOccured()) {
+            zeroed = false;
         }
-        else {
-            direction -> SetPercent(-BANGBANG_ERROR_SPEED);
+        
+        if (!zeroed) { 
+            if (cancoder -> GetPosition() > 0) {
+                direction -> SetPercent(BANGBANG_ERROR_SPEED);
+            }
+            else if (cancoder -> GetPosition() < 0) {
+                direction -> SetPercent(-BANGBANG_ERROR_SPEED);
+            }
+            else {
+                direction -> SetPercent(0);
+                zeroed = true;
+            }
         }
         
         if (main) {
@@ -73,12 +81,15 @@ class SwerveModule {
         else if (upMarg > angle)) {
             direction -> SetPercent(-BANGBANG_ERROR_SPEED);
         }
+        else {
+            direction -> SetPercent(0);
+        }
         
         if (main) {
             link1.SetDirectionAngle(angle);
             link2.SetDirectionAngle(angle);
             link3.SetDirectionAngle(angle);
         }
-    } 
+    }                                            
 };
 

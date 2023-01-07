@@ -3,7 +3,7 @@
 #include <SparkMotor.hpp>
 #include <ctre/Phoenix.h>
 
-#define BANGBANG_ERROR_SPEED 68
+#define BANGBANG_ERROR_SPEED .1
 
 
 class SwerveModule {
@@ -12,14 +12,16 @@ class SwerveModule {
     CANCoder* cancoder;
     CANCoderConfiguration config;
     
-    short role;           // This is determined by what side the module is on, and it does different stuff based off that.
-    bool linked = false;   // There is a 'main' module that is linked to other modules
-    bool zeroed = false;
-    float bangErrorSpeed = .1;
+    short role;           /* This is determined by what side the module is on, and it does different stuff based off that.  
+                                    Key: 1 = Frontleft, 2 = Frontright, 3 = Backright, 4 = Backleft                               
+                          */
+    bool linked = false;  
+    bool isAtAngle; 
+    bool zeroed;
     
     SwerveModule* linkSwerve;
-    
-    
+public:
+
     SwerveModule(int speedID, int direcID, int CanCoderID, short roll, bool speedInverted=false, bool direcInverted=false) {
         speed = new SparkMotor {speedID};
         direction = new SparkMotor {direcID};
@@ -39,7 +41,6 @@ class SwerveModule {
     }
     
     void link(SwerveModule* Link) {
-        
         linked = true;           
         linkSwerve = Link; 
     }
@@ -59,10 +60,10 @@ class SwerveModule {
         }
 
         if (!zeroed) { 
-            if (cancoder -> GetPosition() > 0) {
+            if (cancoder -> GetAbsolutePosition() > 0) {
                 direction -> SetPercent(BANGBANG_ERROR_SPEED);
             }
-            else if (cancoder -> GetPosition() < 0) {
+            else if (cancoder -> GetAbsolutePosition() < 0) {
                 direction -> SetPercent(-BANGBANG_ERROR_SPEED);
             }
             else {
@@ -81,7 +82,7 @@ class SwerveModule {
     }
 
     void SetDirectionAngle(double angle) {
-        double currentPos = cancoder -> GetPosition();
+        double currentPos = cancoder -> GetAbsolutePosition();
 
         if ( currentPos < angle ) {
             direction -> SetPercent(BANGBANG_ERROR_SPEED);
@@ -96,5 +97,38 @@ class SwerveModule {
         if (linked) {
             linkSwerve -> SetDirectionAngle(angle);
         }
-    }                                            
+    }     
+
+    void orient(float speed, bool left) {
+        if (left) {
+            if (role == 1) {
+                direction -> SetDirectionAngle(180);
+            }
+            else if (role == 2) {
+                direction -> SetDirectionAngle(90);
+            }
+            else if (role == 3) {
+                direction -> SetDirectionAngle(0);
+            }
+            else if (role == 4) {
+                direction -> SetDirectionAngle(270);
+            }
+        }
+
+        else {
+            if (role == 1) {
+                direction -> SetDirectionAngle(270);
+            }
+            else if (role == 2) {
+                direction -> SetDirectionAngle(180);
+            }
+            else if (role == 3) {
+                direction -> SetDirectionAngle(90);
+            }
+            else if (role == 4) {
+                direction -> SetDirectionAngle(0);
+            }
+        }
+        speed -> SetPercent(speed);
+    }                                       
 };

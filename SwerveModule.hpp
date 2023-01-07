@@ -4,7 +4,7 @@
 #include <ctre/Phoenix.h>
 
 #define BANGBANG_ERROR_SPEED .1
-
+#define PI 3.14159
 
 class SwerveModule {
     SparkMotor* speed;
@@ -20,8 +20,8 @@ class SwerveModule {
     bool zeroed;
     
     SwerveModule* linkSwerve;
-public:
 
+public:
     SwerveModule(int speedID, int direcID, int CanCoderID, short roll, bool speedInverted=false, bool direcInverted=false) {
         speed = new SparkMotor {speedID};
         direction = new SparkMotor {direcID};
@@ -44,7 +44,26 @@ public:
         linked = true;           
         linkSwerve = Link; 
     }
-
+    
+    double radians(double num) {
+        return num * PI / 180;
+    
+    double coterminal(double thang){
+        while (thang >= 360){
+            thang -= 360;
+        }
+        while (thang < 0){
+            thang += 360;
+        }
+    }
+        
+    double coterminalShortest(double current, double goal) {
+        if (fabs(goal - current) > 180) {
+            return coterminal(goal + current);
+        else {
+            return goal - current;
+    }
+            
     void calibrate() {            // Intented to be ran once, or after the build team destroys the robot. Calibrates the CanCoder 
         cancoder -> ConfigAllSettings(config);
         cancoder -> SetPosition(0);

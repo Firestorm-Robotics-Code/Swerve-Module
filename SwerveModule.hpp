@@ -48,6 +48,7 @@ public:
     double radians(double num) {
         return num * PI / 180;
     }
+    
     double coterminal(double thang){
         while (thang >= 360){
             thang -= 360;
@@ -77,15 +78,17 @@ public:
     }       
     
     void zero() {
+        double target = coterminalShortest(cancoder -> GetAbsolutePosition(), 0);
+        
         if (cancoder -> HasResetOccurred()) {
             zeroed = false;
         }
 
         if (!zeroed) { 
-            if (cancoder -> GetAbsolutePosition() > 0) {
+            if (target > 0) {
                 direction -> SetPercent(BANGBANG_ERROR_SPEED);
             }
-            else if (cancoder -> GetAbsolutePosition() < 0) {
+            else if (target < 0) {
                 direction -> SetPercent(-BANGBANG_ERROR_SPEED);
             }
             else {
@@ -105,11 +108,12 @@ public:
 
     void SetDirectionAngle(double angle) {
         double currentPos = cancoder -> GetAbsolutePosition();
-
-        if ( currentPos < angle ) {
+        double target = coterminalShortest(currentPos, angle);
+        
+        if ( target < angle ) {
             direction -> SetPercent(BANGBANG_ERROR_SPEED);
         }
-        else if ( currentPos > angle ) {
+        else if ( target > angle ) {
             direction -> SetPercent(-BANGBANG_ERROR_SPEED);
         }
         else {

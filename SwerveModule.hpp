@@ -4,7 +4,6 @@
 #include <ctre/Phoenix.h>
 
 #define BANGBANG_ERROR_SPEED .1
-#define PI 3.14159
 
 class SwerveModule {
     SparkMotor* speed;
@@ -43,10 +42,6 @@ public:
     void link(SwerveModule* Link) {
         linked = true;           
         linkSwerve = Link; 
-    }
-    
-    double radians(double num) {
-        return num * PI / 180;
     }
     
     double coterminal(double thang){
@@ -110,10 +105,10 @@ public:
         double currentPos = cancoder -> GetAbsolutePosition();
         double target = coterminalShortest(currentPos, angle);
         
-        if ( target < angle ) {
+        if ( target < 0 ) {
             direction -> SetPercent(BANGBANG_ERROR_SPEED);
         }
-        else if ( target > angle ) {
+        else if ( target > 0 ) {
             direction -> SetPercent(-BANGBANG_ERROR_SPEED);
         }
         else {

@@ -47,7 +47,7 @@ public:
     
     double radians(double num) {
         return num * PI / 180;
-    
+    }
     double coterminal(double thang){
         while (thang >= 360){
             thang -= 360;
@@ -55,13 +55,16 @@ public:
         while (thang < 0){
             thang += 360;
         }
+        return thang;
     }
         
     double coterminalShortest(double current, double goal) {
         if (fabs(goal - current) > 180) {
-            return coterminal(goal + current);
+            return 360 - coterminal(current - goal);
+        }
         else {
             return goal - current;
+        }
     }
             
     void calibrate() {            // Intented to be ran once, or after the build team destroys the robot. Calibrates the CanCoder 

@@ -4,6 +4,7 @@
 #include <ctre/Phoenix.h>
 
 #define BANGBANG_ERROR_SPEED .1
+#define PID_ERROR_MARGIN  5
 #define PI 3.14159
 
 struct SwerveMotor : public SparkMotor {
@@ -13,13 +14,7 @@ struct SwerveMotor : public SparkMotor {
         spark -> setPosition(pos);
     }
 
-    void _loopPIDAt(double pos) {
-        if (GetPosition() > pos) {
-            _configPIDPositionAt(GetPosition() - pos);
-        }
-    }
-
-    void configurePIDAngle(double coef) {
+    void configurePIDCoeff(double coef) {
         coeff = coef;
     }
 
@@ -31,7 +26,12 @@ struct SwerveMotor : public SparkMotor {
     double getPIDPos() {
         return GetPosition();
     }
-}
+    
+    bool isAtPos(double pos, double errorMarg) {
+        pos *= coeff;
+        return GetPosition() <= (errorMarg - pos) && GetPosition() >= (errorMarg + pos);
+    }
+};
 
 class SwerveModule {
     SwerveMotor* speed;
@@ -132,13 +132,15 @@ public:
 
     void SetDirectionAngle(double angle) {
         double currentPos = cancoder -> GetAbsolutePosition();
-
+        double desiredPos = coterminalShortest(currentPos, angle);
+        
         direction -> _configPIDPositionAt(currentPos);
-
-        double zeroPoint = coterminalShortest(currentPos, angle);
         
-        directionl -> setPosPIDTo(angle);
+        direction -> setPIDPosTo(currentPos + desiredPos);
         
+        if (direction -> isAtPos(currentPos + desiredPos, PID_ERROR_MARGIN)) {
+            
+        }
         if (linked) {
             linkSwerve -> SetDirectionAngle(angle);
         }

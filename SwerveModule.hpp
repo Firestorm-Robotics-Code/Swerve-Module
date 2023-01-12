@@ -138,9 +138,7 @@ public:
         
         direction -> setPIDPosTo(currentPos + desiredPos);
         
-        if (direction -> isAtPos(currentPos + desiredPos, PID_ERROR_MARGIN)) {
-            
-        }
+    
         if (linked) {
             linkSwerve -> SetDirectionAngle(angle);
         }
@@ -149,7 +147,7 @@ public:
     void orient(float percent, bool left) {
         if (left) {
             if (role == 1) {
-                direction -> SetPositionPID()
+                direction -> SetDirectionAngle(180);
             }
             else if (role == 2) {
                 SetDirectionAngle(90);

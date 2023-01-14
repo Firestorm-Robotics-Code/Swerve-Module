@@ -1,4 +1,4 @@
-See file:///home/lukeiscool/Desktop/Code/Github/Robots/SwerveTest/build/tmp/compileFrcUserProgramDebugExecutableFrcUserProgramCpp/output.txt for all output for compileFrcUserProgramDebugExecutableFrcUserProgramCpp.
+See file:///home/awesome/desk/programs/git/Swerve-Module/SwerveTest/build/tmp/compileFrcUserProgramDebugExecutableFrcUserProgramCpp/output.txt for all output for compileFrcUserProgramDebugExecutableFrcUserProgramCpp.
 compiling Robot.cpp successful.
 
-Finished compileFrcUserProgramDebugExecutableFrcUserProgramCpp, see full log file:///home/lukeiscool/Desktop/Code/Github/Robots/SwerveTest/build/tmp/compileFrcUserProgramDebugExecutableFrcUserProgramCpp/output.txt.
+Finished compileFrcUserProgramDebugExecutableFrcUserProgramCpp, see full log file:///home/awesome/desk/programs/git/Swerve-Module/SwerveTest/build/tmp/compileFrcUserProgramDebugExecutableFrcUserProgramCpp/output.txt.

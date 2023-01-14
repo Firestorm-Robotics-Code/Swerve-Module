@@ -10,8 +10,12 @@
 struct SwerveMotor : public SparkMotor {
     double coeff = 1;
 
+    SwerveMotor(int id) : SparkMotor(id) {
+
+    }
+
     void _configPIDPositionAt(double pos) {
-        spark -> setPosition(pos);
+        controls -> encoder.SetPosition(pos);
     }
 
     void configurePIDCoeff(double coef) {
@@ -29,7 +33,7 @@ struct SwerveMotor : public SparkMotor {
     
     bool isAtPos(double pos, double errorMarg) {
         pos *= coeff;
-        return GetPosition() <= (errorMarg - pos) && GetPosition() >= (errorMarg + pos);
+        return getPIDPos() <= (errorMarg - pos) && getPIDPos() >= (errorMarg + pos);
     }
 };
 
@@ -130,24 +134,24 @@ public:
         zeroed = false;
     }
 
-    void SetDirectionAngle(double angle) {
+    void SetDirectionAngle(double angle) {/*
         double currentPos = cancoder -> GetAbsolutePosition();
         double desiredPos = coterminalShortest(currentPos, angle);
         
         direction -> _configPIDPositionAt(currentPos);
         
-        direction -> setPIDPosTo(currentPos + desiredPos);
+        direction -> setPosPIDTo(currentPos + desiredPos);
         
     
         if (linked) {
             linkSwerve -> SetDirectionAngle(angle);
         }
-    }     
+    }*/     
 
     void orient(float percent, bool left) {
         if (left) {
             if (role == 1) {
-                direction -> SetDirectionAngle(180);
+                SetDirectionAngle(180);
             }
             else if (role == 2) {
                 SetDirectionAngle(90);

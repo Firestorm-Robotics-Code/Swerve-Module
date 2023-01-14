@@ -1,0 +1,4 @@
+See file:///home/lukeiscool/Desktop/Code/Github/Robots/SwerveTest/build/tmp/compileFrcUserProgramReleaseExecutableFrcUserProgramCpp/output.txt for all output for compileFrcUserProgramReleaseExecutableFrcUserProgramCpp.
+compiling Robot.cpp successful.
+
+Finished compileFrcUserProgramReleaseExecutableFrcUserProgramCpp, see full log file:///home/lukeiscool/Desktop/Code/Github/Robots/SwerveTest/build/tmp/compileFrcUserProgramReleaseExecutableFrcUserProgramCpp/output.txt.

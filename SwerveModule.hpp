@@ -5,12 +5,12 @@
 
 #define BANGBANG_ERROR_SPEED .1
 #define PID_ERROR_MARGIN  5
-#define PI 3.14159
+#define CANCODER_MAGNET_OFFSET  500
 
 struct SwerveMotor : public SparkMotor {
     double coeff = 1;
 
-    SwerveMotor(int id) : SparkMotor(id) {
+    SwerveMotor(int id) : SparkMotor(id) {                      // Constructor stuff
 
     }
 
@@ -46,7 +46,7 @@ class SwerveModule {
     short role;           /* This is determined by what side the module is on, and it does different stuff based off that.  
                                     Key: 1 = Frontleft, 2 = Frontright, 3 = Backright, 4 = Backleft                               
                           */
-    bool linked = false;  
+    bool isLinked = false;  
     bool isAtAngle; 
     bool zeroed;
     
@@ -69,11 +69,12 @@ public:
         config.sensorCoefficient = 360.0/4096.0;
         config.unitString = "degrees";
         config.sensorTimeBase = SensorTimeBase::PerSecond;
+        
     }
     
-    void link(SwerveModule* Link) {
-        linked = true;           
-        linkSwerve = Link; 
+    void linkToSwerve(SwerveModule* LinkSwerve) {
+        isLinked = true;           
+        linkSwerve = LinkSwerve; 
     }
 
     double coterminal(double thang){
@@ -99,7 +100,7 @@ public:
         cancoder -> ConfigAllSettings(config);
         cancoder -> ConfigMagnetOffset(offset);
 
-        if (linked) {
+        if (isLinked) {
             linkSwerve -> calibrate(offset);
         }
     }       
@@ -125,7 +126,7 @@ public:
             }
         }
         
-        if (linked) {
+        if (isLinked) {
             linkSwerve -> zero();
         }
     }
@@ -143,7 +144,7 @@ public:
         direction -> setPosPIDTo(currentPos + desiredPos);
         
     
-        if (linked) {
+        if (isLinked) {
             linkSwerve -> SetDirectionAngle(angle);
         }
     }*/     
@@ -180,7 +181,7 @@ public:
         }
         speed -> SetPercent(percent);
 
-        if (linked) {
+        if (isLinked) {
             linkSwerve -> orient(percent, left);
         }
     }  
@@ -191,3 +192,4 @@ public:
         return cancoder -> GetAbsolutePosition();
     }                               
 };
+

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SparkMotor.hpp>
+#include <FRL/motor/SparkMotor.hpp>
 #include <ctre/Phoenix.h>
 
 #define BANGBANG_ERROR_SPEED .1
@@ -26,14 +26,10 @@ struct SwerveMotor : public SparkMotor {
         pos *= coeff;
         SetPositionPID(pos);
     }
-
-    double getPIDPos() {
-        return GetPosition();
-    }
     
     bool isAtPos(double pos, double errorMarg) {
         pos *= coeff;
-        return getPIDPos() <= (errorMarg - pos) && getPIDPos() >= (errorMarg + pos);
+        return GetPosition() <= (errorMarg - pos) && GetPosition() >= (errorMarg + pos);
     }
 };
 
@@ -147,7 +143,7 @@ public:
         if (isLinked) {
             linkSwerve -> SetDirectionAngle(angle);
         }
-    }*/     
+    */}
 
     void orient(float percent, bool left) {
         if (left) {
@@ -192,4 +188,3 @@ public:
         return cancoder -> GetAbsolutePosition();
     }                               
 };
-

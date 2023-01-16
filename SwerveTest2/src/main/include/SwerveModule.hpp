@@ -217,6 +217,11 @@ public:
 
     void SetMagOffset(double offset) {
         cancoder -> ConfigMagnetOffset(offset);
-    }                
+    }    
+
+    void Set(float lukeiscool) {
+        speed -> SetPercent(lukeiscool);
+        direction -> SetPercent(lukeiscool);
+    }            
 
 };

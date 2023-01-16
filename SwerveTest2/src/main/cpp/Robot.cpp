@@ -34,6 +34,11 @@ public:
       frc::SmartDashboard::PutNumber("Frontright CANCoder position", frontRightSwerve -> GetAbsoluteCANCoderPos());
       frc::SmartDashboard::PutNumber("Backright CANCoder position", backRightSwerve -> GetAbsoluteCANCoderPos());
       frc::SmartDashboard::PutNumber("Backleft CANCoderPosition", mainSwerve -> GetAbsoluteCANCoderPos());
+
+      frontLeftSwerve -> Set(.1);
+      frontRightSwerve -> Set(.1);
+      backRightSwerve -> Set(.1);
+      mainSwerve -> Set(.1);
     }
 };
 

@@ -15,4 +15,10 @@ public:
     virtual void SetPositionPID(double position) = 0;
     virtual void SetSpeedPID(double speed) = 0;
     virtual bool isAtZero() = 0;
+    
+    virtual bool isAtPos(double pos, double errorMarg) { /* Because of inheritance, we can have functions defined that depend on other functions that are only defined in subclasses */
+        /* This keeps the code clean, because we don't redefine functions in multiple places */
+        return GetPosition() <= (errorMarg - pos) && GetPosition() >= (errorMarg + pos);
+    }
+    // In subclasses we can extend this function to use different logic, like coterminality
 };

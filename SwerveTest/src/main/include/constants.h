@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #define FRONT_LEFT_SPEED 1
 #define FRONT_LEFT_DIREC 2
 #define FRONT_LEFT_CANCODER 1
@@ -11,4 +11,4 @@
 #define BACK_LEFT_CANCODER 3
 #define BACK_RIGHT_SPEED 7
 #define BACK_RIGHT_DIREC 8
-#define BACK_RIGHT_CANCODER 4
+#define BACK_RIGHT_CANCODER 4*/

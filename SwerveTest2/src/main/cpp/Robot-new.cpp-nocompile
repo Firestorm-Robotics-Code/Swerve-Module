@@ -1,0 +1,90 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+#include <frc/DriverStation.h>
+#include <frc/livewindow/LiveWindow.h>
+#include <frc/shuffleboard/Shuffleboard.h>
+#include <hal/DriverStation.h>
+#include <networktables/NetworkTable.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/XboxController.h>
+
+#include "SwerveModule.hpp"
+#include "ModularRobot.hpp"
+#include "constants.h"
+#include <AHRS.h>
+#include <frc/SPI.h>
+
+#define PI 3.141592
+
+
+class Robot : public ModularRobot {
+    SwerveModule* frontLeftSwerve  = new SwerveModule   {FRONT_LEFT_SPEED,  FRONT_LEFT_DIREC, FRONT_LEFT_CANCODER,  1, 1745, true};         // Speed, direction, cancoder, and state
+    SwerveModule* frontRightSwerve = new SwerveModule   {FRONT_RIGHT_SPEED, FRONT_RIGHT_DIREC, FRONT_RIGHT_CANCODER, 2, 1170, true};
+    SwerveModule* backRightSwerve  = new SwerveModule   {BACK_RIGHT_SPEED,  BACK_RIGHT_DIREC,  BACK_RIGHT_CANCODER,   3, 1608};
+    SwerveModule* mainSwerve       = new SwerveModule   {BACK_LEFT_SPEED,   BACK_LEFT_DIREC,  BACK_LEFT_CANCODER,   4, 534};
+    frc::XboxController xbox {4};
+
+    AHRS navx {frc::SPI::Port::kMXP}; // Well, obviously, the navx
+
+    float navxStartPos;
+public:
+    void Init() {
+      setData("Tests", "FRC", 6341);
+      mainSwerve -> linkToSwerve(frontRightSwerve);
+      frontRightSwerve -> linkToSwerve(frontLeftSwerve);
+      frontLeftSwerve -> linkToSwerve(backRightSwerve);
+    }
+
+    double GetFieldCentric(){
+      return 0;//(navx.GetFusedHeading() - navxStartPos) * 4096/360; // Convert degrees to ticks and return it
+    }
+
+    void BeginTeleop() {
+      //mainSwerve -> notZeroed();               // Tells the swerve to zero when called to
+      navxStartPos = navx.GetFusedHeading();
+    }
+
+    void XboxMode(){
+      double dx = xbox.GetLeftX();
+      double dy = xbox.GetLeftY();
+      if (dx == 0 && dy == 0){
+        return; // Death by NaN averted
+      }
+      double hypotenuse = sqrt(dy * dy + dx * dx);
+      double rads = atan(dy/dx); // calc joke haha funni
+      if (dx < 0){
+        rads += PI; // PI = 180 degrees
+      }
+      rads = PI - rads; // Flip it... I think?
+      rads += PI/2; // Add 90 degrees counterclockwise for orientation purposes
+      rads = smartLoop(rads, PI * 2);
+      double goal = smartLoop(rads * 4096/(2 * PI) + GetFieldCentric());
+      mainSwerve -> SetDirectionAngle(goal); // Convert from radians to ticks and subtract Field Centric Offset
+      mainSwerve -> MovePercent(hypotenuse * 0.2);
+      frc::SmartDashboard::PutNumber("Request Position", goal);
+    }
+
+    void TeleopLoop() {
+      frc::SmartDashboard::PutNumber("FrontLeft CANCoder position", frontLeftSwerve -> GetAbsoluteCANCoderPos());
+      frc::SmartDashboard::PutNumber("Frontright CANCoder position", frontRightSwerve -> GetAbsoluteCANCoderPos());
+      frc::SmartDashboard::PutNumber("Backright CANCoder position", backRightSwerve -> GetAbsoluteCANCoderPos());
+      frc::SmartDashboard::PutNumber("Backleft CANCoderPosition", mainSwerve -> GetAbsoluteCANCoderPos());
+      frc::SmartDashboard::PutNumber("Fused heading", navx.GetFusedHeading());
+      if (xbox.IsConnected()){
+        XboxMode();
+      }
+      mainSwerve -> ApplySpeed();
+    }
+
+    void BeginAutonomous(){
+
+    }
+};
+
+#ifndef RUNNING_FRC_TESTS
+int main() {
+  return frc::StartRobot<Robot>();
+}
+#endif

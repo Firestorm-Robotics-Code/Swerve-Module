@@ -15,10 +15,10 @@
 
 
 class Robot : public ModularRobot {
-    SwerveModule* frontLeftSwerve  = new SwerveModule   {FRONT_LEFT_SPEED,  FRONT_LEFT_DIREC, FRONT_LEFT_CANCODER,  1};         // Speed, direction, cancoder, and state
-    SwerveModule* frontRightSwerve = new SwerveModule   {FRONT_RIGHT_SPEED, FRONT_LEFT_DIREC, FRONT_RIGHT_CANCODER, 2};
-    SwerveModule* backRightSwerve  = new SwerveModule   {BACK_RIGHT_SPEED,  BACK_LEFT_DIREC,  BACK_LEFT_CANCODER,   3};
-    SwerveModule* mainSwerve       = new SwerveModule   {BACK_LEFT_SPEED,   BACK_LEFT_DIREC,  BACK_LEFT_CANCODER,   4};
+    SwerveModule frontLeftSwerve (FRONT_LEFT_SPEED,  FRONT_LEFT_DIREC, FRONT_LEFT_CANCODER,   1);         // Speed, direction, cancoder, and state
+    SwerveModule frontRightSwerve (FRONT_RIGHT_SPEED, FRONT_RIGHT_DIREC, FRONT_RIGHT_CANCODER, 2);
+    SwerveModule backRightSwerve (BACK_RIGHT_SPEED,  BACK_RIGHT_DIREC,  BACK_RIGHT_CANCODER,  3);
+    SwerveModule mainSwerve (BACK_LEFT_SPEED,   BACK_LEFT_DIREC,  BACK_LEFT_CANCODER,    4);
 
 public: 
     void Init() {
@@ -34,6 +34,10 @@ public:
       frc::SmartDashboard::PutNumber("Frontright CANCoder position", frontRightSwerve -> GetAbsoluteCANCoderPos());
       frc::SmartDashboard::PutNumber("Backright CANCoder position", backRightSwerve -> GetAbsoluteCANCoderPos());
       frc::SmartDashboard::PutNumber("Backleft CANCoderPosition", mainSwerve -> GetAbsoluteCANCoderPos());
+      frontLeftSwerve.Set(0.1);
+      backLeftSwerve.Set(0.1);
+      frontRightSwerve.Set(0.1);
+      mainSwerve.Set(0.1);
     }
 };
 

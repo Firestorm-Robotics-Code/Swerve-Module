@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <stdio.h>
+#include <frc/internal/DriverStationModeThread.h>
 
 class ModularRobot;
 
@@ -162,14 +163,18 @@ public:
     void StartCompetition(){
         Init();
         std::cout << RobotName << " by " << TeamName << " (FRC " << TeamNumber << ") is now turning on!" << std::endl;
-        HAL_InitializeDriverStation();
+
+        frc::internal::DriverStationModeThread modeThread;
+
+        wpi::Event event{false, false};
+        frc::DriverStation::ProvideRefreshedDataEventHandle(event.GetHandle());
+
         HAL_ObserveUserProgramStarting();
         std::thread periodic(periodicThread, this);
         periodic.detach();
         while (!m_exit){ // Restructured from the old uglies. This one gives easy-peasy mainlooping without our ugly-mugly turdy-purdy stinky-winky infinite while loop
             loop(); // General mainloop
             if (IsDisabled()){ // Disabled tasks
-                HAL_ObserveUserProgramDisabled();
                 if (mode != 0){
                     HAL_SendConsoleLine("Begin Disable mode");
                     localTick = 0; // Reset the local tick counter
@@ -184,11 +189,12 @@ public:
                 else if (mode == 3){
                     CleanUpTeleop();
                 }
+                modeThread.InDisabled(true);
                 DisabledLoop();
+                modeThread.InDisabled(false);
                 mode = 0;
             }
             else if (IsAutonomous()){ // Autonomous tasks
-                HAL_ObserveUserProgramAutonomous();
                 if (mode != 1){
                     HAL_SendConsoleLine("Begin Autonomous mode");
                     localTick = 0; // Reset the local tick counter
@@ -203,11 +209,12 @@ public:
                 else if (mode == 3){
                     CleanUpTeleop();
                 }
+                modeThread.InAutonomous(true);
                 AutonomousLoop();
+                modeThread.InAutonomous(false);
                 mode = 1;
             }
             else if (IsTest()){ // Test tasks
-                HAL_ObserveUserProgramTest();
                 if (mode != 2){
                     HAL_SendConsoleLine("Begin Test mode");
                     localTick = 0; // Reset the local tick counter
@@ -222,11 +229,12 @@ public:
                 else if (mode == 3){
                     CleanUpTeleop();
                 }
+                modeThread.InTest(true);
                 TestLoop();
+                modeThread.InTest(false);
                 mode = 2;
             }
             else{ // Teleop tasks
-                HAL_ObserveUserProgramTeleop();
                 if (mode != 3){
                     HAL_SendConsoleLine("Begin Teleop mode");
                     localTick = 0; // Reset the local tick counter
@@ -241,7 +249,9 @@ public:
                 else if (mode == 2){
                     CleanUpTest();
                 }
+                modeThread.InTeleop(true);
                 TeleopLoop();
+                modeThread.InTeleop(false);
                 mode = 3;
             }
             tick++; // Update the tick counters

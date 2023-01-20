@@ -26,6 +26,10 @@ public:
         invert =! invert;
         spark -> SetInverted(invert);
     }
+
+    void setInverted(bool inverted){ // Function overloads are really cool.
+        spark -> SetInverted(inverted);
+    }
     
     void SetPercent(double percent){
         spark -> Set(percent);
@@ -69,5 +73,9 @@ public:
         
     bool isAtZero() {
         return GetPosition() == 0;
+    }
+
+    void SetEncoderPosition(double pos) {
+        controls -> encoder.SetPosition(pos);
     }
 };

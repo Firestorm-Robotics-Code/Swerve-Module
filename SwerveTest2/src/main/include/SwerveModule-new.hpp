@@ -13,9 +13,8 @@
 #include <PidController.hpp>
 
 #define BANGBANG_ERROR_SPEED .05
-#define PID_ERROR_MARGIN  5
-#define CANCODER_MAGNET_OFFSET  500
-
+#define PID_ERROR_MARGIN 5
+#define BRAKE_SPEED .4                                 // To run the wheels against each other; this of course wil have to be tune
 
 struct SwerveMotor : public SparkMotor {
     double coeff = 1;
@@ -215,41 +214,32 @@ public:
 
     void orient(float percent, bool left) {
         if (left) {
-            if (role == 1) {
-                SetDirectionAngle(180);
-            }
-            else if (role == 2) {
-                SetDirectionAngle(90);
-            }
-            else if (role == 3) {
-                SetDirectionAngle(0);
-            }
-            else if (role == 4) {
-                SetDirectionAngle(270);
-            }
+            SetDirectionAngle(coterminal(270 - (role * 90)));              // Math time
         }
 
         else {
-            // Note: there is a clever piece of math you can use to simplify this else into 3 lines!
-            if (role == 1) {
-                SetDirectionAngle(270);
-            }
-            else if (role == 2) {
-                SetDirectionAngle(180);
-            }
-            else if (role == 3) {
-                SetDirectionAngle(90);
-            }
-            else if (role == 4) {
-                SetDirectionAngle(0);
-            }
+            SetDirectionAngle(coterminal(360 - (role * 90)));           
         }
+        
         speed -> SetPercent(percent);
 
         if (isLinked) {
             linkSwerve -> orient(percent, left);
         }
     }  
+    
+    void brake() {
+        if (role == 1 || role == 2) {
+            SetDirectionAngle(180);
+        }
+        
+        else {
+            SetDirectionAngle(0);
+        }
+        
+        if (isLinked) {
+            linkSwerve -> brake();
+        }                // This function is not complete
 
     /*                            Tests                             */        
 
@@ -265,7 +255,7 @@ public:
         speed -> SetPercent(lukeiscool);
         direction -> SetPercent(lukeiscool);
     }
-
+    
     bool checkZeroed(){
         return zeroed && (isLinked ? linkSwerve -> checkZeroed() : true);
         /* Ternary operator!
